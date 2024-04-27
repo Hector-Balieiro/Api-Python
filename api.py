@@ -3,37 +3,69 @@ from flask import Flask, jsonify, request
 app = Flask(__name__)
 
 livros = [
-    {'id': 1, 'titulo': 'Senhor dos aneis', 'autor': 'J.R.R Tolkien'},
-    {'id': 2, 'titulo': 'O poder do habito', 'autor': 'Não sei'},
-    {'id': 3, 'titulo': 'O diário de anne Frank', 'autor': 'Não sei'},
-    {'id': 4, 'titulo': 'Harry Potter', 'autor': 'J.K Rowling'},
-    {'id': 5, 'titulo': 'O manifesto comunista', 'autor': 'Karl Marx'},
-    {'id': 6, 'titulo': 'Negócio do Século XXI', 'autor': 'Robert Kiosak'},
-    {'id': 7, 'titulo': 'Pai rico, Pai pobre', 'autor': 'Robert Kiosak'},
+    {
+        'id': 1,
+        'titulo': 'Senhor dos aneis',
+        'autor': 'J.R.R Tolkien'
+    },
+    {
+        'id': 2,
+        'titulo': 'O poder do habito',
+        'autor': 'Não sei'
+    },
+    {
+        'id': 3,
+        'titulo': 'O diário de anne Frank',
+        'autor': 'Não sei'
+    },
+    {
+        'id': 4,
+        'titulo': 'Harry Potter',
+        'autor': 'J.K Rowling'
+    },
+    {
+        'id': 5,
+        'titulo': 'O manifesto comunista',
+        'autor': 'Karl Marx'
+    },
+    {
+        'id': 6,
+        'titulo': 'Negócio do Século XXI',
+        'autor': 'Robert Kiosak'
+    },
+    {
+        'id': 7,
+        'titulo': 'Pai rico, Pai pobre',
+        'autor': 'Robert Kiosak'
+    },
 ]
 
 
 @app.errorhandler(404)
 def invalid_route(e):
- return jsonify({'errorCode': 404, 'message': 'Invalid route'})
+  return jsonify({'errorCode': 404, 'message': 'Invalid route'})
 
 
-@app.route('/livros', methods = ['GET'])
+@app.route('/livros', methods=['GET'])
 def mostrar_livros():
-    return jsonify(livros)
+  return jsonify(livros)
 
-@app.route('/livros/<int:id>', methods = ['GET'])
+
+@app.route('/livros/<int:id>', methods=['GET'])
 def livro_id(id):
-    for livro in livros:
-        if livro.get('id') == id:
-            return jsonify(livro)
-    
+  resultado = None
 
-    return jsonify({'message':'ID não encontrado'})
+  for livro in livros:
+    if livro.get('id') == id:
+      resultado = jsonify(livro)
+
+  if resultado == None:
+    return jsonify(errorCode=404, message='Livro não encontrado')
+  else:
+    return resultado
 
 
-
-@app.route('/livros/<int:id>', methods = ['PUT'])
+@app.route('/livros/<int:id>', methods=['PUT'])
 def alterar(id):
     alterado = request.get_json()
     
