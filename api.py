@@ -27,54 +27,54 @@ def livro_id(id):
     for livro in livros:
         if livro.get('id') == id:
             return jsonify(livro)
-        else:
-            return jsonify({'message':'ID não encontrado'})
+    
+
+    return jsonify({'message':'ID não encontrado'})
 
 
 
 @app.route('/livros/<int:id>', methods = ['PUT'])
 def alterar(id):
     alterado = request.get_json()
-
+    
     try:
-        valor_id = alterado['id']
         valor_autor = alterado['autor']
         valor_titulo = alterado['titulo']
     except KeyError:
-        return jsonify({'message': 'está faltando uma chave no novo valor adicionado'})
+        return jsonify({'message': 'está faltando uma chave no valor alterado'})
 
-    if type(valor_id) == int and type(valor_autor) == str and type(valor_titulo) == str:
+    if type(valor_autor) == str and type(valor_titulo) == str:
         for i, livro in enumerate(livros):
             if livro.get('id') == id:
                 livros[i].update(alterado)
                 return jsonify(livro)
+            else:
+                return jsonify({'message':'Id não encontrado'})
     else:
-        return jsonify({'message': 'Os tipos de valores das chaves "id","autor","titulo" tem que ser respectivamente: inteiro, string, string'})
+        return jsonify({'message': 'Os tipos de valores das chaves "autor" e "titulo", tem que ser respectivamente: string, string'})
 
 
 
 @app.route('/livros', methods = ['POST'])
 def adicionar():
+
     novo_valor = request.get_json()
+
     try:
-        valor_id = novo_valor['id']
         valor_autor = novo_valor['autor']
         valor_titulo = novo_valor['titulo']
     
     except KeyError:
         return jsonify({'message': 'está faltando uma chave no novo valor adicionado'})
-
-    if type(valor_id) == int and type(valor_autor) == str and type(valor_titulo) == str:
-        for i in livros:
-            if i['id'] == valor_id:
-               return jsonify({'message': 'o id adicionado ja existe'})
-            
-        else:
+    
+    if type(valor_autor) == str and type(valor_titulo) == str:
+                novo_id = livros[-1]
+                novo_valor['id'] = novo_id['id']+1
                 livros.append(novo_valor)
-                print(novo_valor['id'])
+
                 return jsonify(livros)
         
-    elif valor_id == None or valor_autor == None or valor_titulo == None:
+    elif valor_autor == None or valor_titulo == None:
         return jsonify({'message':'os valores id, autor ou titulo não podem ser nulos'})
     else :
         return jsonify({'message': 'Os tipos de valores das chaves "id","autor","titulo" tem que ser respectivamente: inteiro, string, string'})
@@ -82,10 +82,12 @@ def adicionar():
 
 @app.route('/livros/<int:id>', methods = ['DELETE'])
 def remover(id):
+    livro_removido = {}
     for i, livro in enumerate(livros):
         if livro.get('id') == id:
+            livro_removido = livros[i]
             del(livros[i])
-            return jsonify(livros)
-        else:
-            return jsonify({'message':'ID não encontrado para excluir'})
+            return jsonify({'Livro deletado':livro_removido})
+
+    return jsonify({'message':'ID não encontrado para excluir'})
 app.run(port = 8080, host = 'localhost', debug = True)
